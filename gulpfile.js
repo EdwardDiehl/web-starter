@@ -1,41 +1,17 @@
 const gulp = require('gulp'),
+  watch = require('gulp-watch'),
   prefixer = require('gulp-autoprefixer'),
   sass = require('gulp-sass'),
-  // imagemin = require('gulp-imagemin'),
-  // rimraf = require('rimraf'),
+  imagemin = require('gulp-imagemin'),
+  pngquant = require('imagemin-pngquant'),
+  del = require('del');
+  concat = require('gulp-concat');
   browserSync = require("browser-sync"),
   stylelint = require('gulp-stylelint'),
+  userPaths = require('./gulpfile_modules/user-paths');
+  vendorPaths = require('./gulpfile_modules/vendor-paths');
+  cleanPaths = require('./gulpfile_modules/clean-paths');
   reload = browserSync.reload;
-
-const path = {
-  build: {
-    html: 'build/',
-    js: 'build/js/',
-    css: 'build/css/',
-    img: 'build/img/',
-    fonts: 'build/fonts/'
-  },
-  src: {
-    html: 'src/*.html',
-    js: 'src/js/main.js',
-    style: 'src/style/main.scss',
-    img: 'src/img/**/*.*',
-    fonts: 'src/fonts/**/*.*'
-  },
-  watch: {
-    html: 'src/**/*.html',
-    js: 'src/js/**/*.js',
-    style: 'src/style/**/*.scss',
-    img: 'src/img/**/*.*',
-    fonts: 'src/fonts/**/*.*'
-  },
-  lint: {
-    html: 'src/**/*.html',
-    js: 'src/js/**/*.js',
-    style: 'src/style/**/*.scss'
-  },
-  clean: './build'
-};
 
 const browserSyncConfig = {
   server: {
@@ -52,39 +28,34 @@ gulp.task('webserver', () => {
 });
 
 gulp.task('clean', () => {
-  rimraf(path.clean);
+  del(cleanPaths.clean);
 });
 
 gulp.task('html:build', () => {
-  gulp.src(path.src.html)
-    .pipe(gulp.dest(path.build.html))
+  gulp.src(userPaths.html.src)
+    .pipe(gulp.dest(userPaths.html.build))
     .pipe(reload({ stream: true }));
 });
 
 gulp.task('js:build', () => {
-  gulp.src(path.src.js)
-    .pipe(gulp.dest(path.build.js))
+  gulp.src(userPaths.js.src)
+    .pipe(gulp.dest(userPaths.js.build))
     .pipe(reload({ stream: true }));
 });
 
-gulp.task('style:build', () => {
-  gulp.src(path.src.style)
-    .pipe(sourcemaps.init())
+gulp.task('css:build', () => {
+  gulp.src(userPaths.css.src)
     .pipe(sass({
-      includePaths: ['src/style/'],
-      outputStyle: 'compressed',
-      sourceMap: true,
+      includePaths: ['src/css/'],
       errLogToConsole: true
     }))
     .pipe(prefixer())
-    .pipe(cssmin())
-    .pipe(sourcemaps.write())
-    .pipe(gulp.dest(path.build.css))
+    .pipe(gulp.dest(userPaths.css.build))
     .pipe(reload({ stream: true }));
 });
 
-gulp.task('style:lint', () => {
-  gulp.src(path.lint.style)
+gulp.task('css:lint', () => {
+  gulp.src(userPaths.css.lint)
     .pipe(stylelint({
       failAfterError: false, // disable fail after error
       reporters: [{
@@ -94,34 +65,69 @@ gulp.task('style:lint', () => {
     }));
 });
 
+gulp.task('image:build', () => {
+  gulp.src(userPaths.img.src)
+    .pipe(imagemin({ // compress
+      progressive: true, // .jpg
+      svgoPlugins: [{
+        removeViewBox: false
+      }], // .svg
+      use: [pngquant()],
+      interlaced: true, // .gif
+      optimizationLevel: 3 // compression level from 0 to 7
+    }))
+    .pipe(gulp.dest(userPaths.img.build))
+    .pipe(reload({ stream: true }));
+});
+
+gulp.task('fonts:build', () => {
+  gulp.src(userPaths.fonts.src)
+    .pipe(gulp.dest(userPaths.fonts.build))
+});
+
+// build vendor assets
+gulp.task('vendorJs:build', () => {
+  gulp.src(vendorPaths.js.src)
+    .pipe(concat(vendorPaths.js.output))
+    .pipe(gulp.dest(vendorPaths.js.build));
+});
+
+gulp.task('vendorCss:build', () => {
+  gulp.src(vendorPaths.css.src)
+    .pipe(concat(vendorPaths.css.output))
+    .pipe(gulp.dest(vendorPaths.css.build));
+});
+
 gulp.task('lint', [
           // 'html:lint',
           // 'js:lint',
-          'style:lint'
+          'css:lint'
 ]);
 
 gulp.task('build', [
           'html:build',
           'js:build',
-          'style:build',
+          'vendorJs:build',
+          'css:build',
+          'vendorCss:build',
           'fonts:build',
           'image:build'
 ]);
 
 gulp.task('watch', () => {
-  watch([path.watch.html], () => {
+  watch([userPaths.html.watch], () => {
     gulp.start('html:build');
   });
-  watch([path.watch.style], () => {
-    gulp.start('style:build');
+  watch([userPaths.css.watch], () => {
+    gulp.start('css:build');
   });
-  watch([path.watch.js], () => {
+  watch([userPaths.js.watch], () => {
     gulp.start('js:build');
   });
-  watch([path.watch.img], () => {
+  watch([userPaths.img.watch], () => {
     gulp.start('image:build');
   });
-  watch([path.watch.fonts], () => {
+  watch([userPaths.fonts.watch], () => {
     gulp.start('fonts:build');
   });
 });
