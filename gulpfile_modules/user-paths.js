@@ -4,16 +4,18 @@ module.exports = {
       'src/js/main.js'
     ],
     build: 'build/js/',
-    output: 'main.bundle.js',
+    output: 'main.js',
+    outputMin: 'main.min.js',
     watch: 'src/js/**/*.js',
     lint: 'src/js/**/*.js'
   },
   css: {
     src: [
       'src/css/main.scss'
-    ],  
+    ],
     build: 'build/css/',
-    output: 'main.bundle.css',
+    output: 'main.css',
+    outputMin: 'main.min.css',
     watch: 'src/css/**/*.*css',
     lint: 'src/css/**/*.*css'
   },

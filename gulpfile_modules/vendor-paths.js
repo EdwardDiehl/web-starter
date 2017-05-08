@@ -9,7 +9,8 @@ module.exports = {
       'node_modules/bootstrap/dist/js/bootstrap.min.js'
     ],
     build: 'build/js',
-    output: 'vendor.bundle.js'
+    output: 'vendor.js',
+    outputMin: 'vendor.min.js'
   },
   css: {
     src: [
@@ -19,6 +20,7 @@ module.exports = {
       'node_modules/bootstrap/dist/css/bootstrap.min.css'
     ],
     build: 'build/css',
-    output: 'vendor.bundle.css'
+    output: 'vendor.css',
+    outputMin: 'vendor.min.css'
   }
 }
