@@ -77,7 +77,7 @@ gulp.task('css:lint', () => {
 });
 
 gulp.task('images:build', () => {
-  gulp.src(userPaths.img.src)
+  gulp.src(userPaths.images.src)
     .pipe(imagemin({ // compress
       progressive: true, // .jpg
       svgoPlugins: [{
@@ -87,7 +87,7 @@ gulp.task('images:build', () => {
       interlaced: true, // .gif
       optimizationLevel: 3 // compression level from 0 to 7
     }))
-    .pipe(gulp.dest(userPaths.img.build))
+    .pipe(gulp.dest(userPaths.images.build))
     .pipe(reload({ stream: true }));
 });
 
@@ -142,7 +142,7 @@ gulp.task('watch', () => {
   watch([userPaths.js.watch], () => {
     gulp.start('js:build');
   });
-  watch([userPaths.img.watch], () => {
+  watch([userPaths.images.watch], () => {
     gulp.start('images:build');
   });
   watch([userPaths.fonts.watch], () => {

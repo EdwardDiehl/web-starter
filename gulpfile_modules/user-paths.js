@@ -26,10 +26,10 @@ module.exports = {
     watch: 'src/**/*.html',
     lint: 'src/**/*.html',
   },
-  img: {
-    src: 'src/img/**/*.*',
-    build: 'build/img/',
-    watch: 'src/img/**/*.*'
+  images: {
+    src: 'src/images/**/*.*',
+    build: 'build/images/',
+    watch: 'src/images/**/*.*'
   },
   fonts: {
     src: 'src/fonts/**/*.*',
